@@ -61,7 +61,7 @@ def get_html():
     return html
 
 #Function to send email
-def send_email():
+def send_email(EMAIL_USER, EMAIL_PASS):
     #Create attachments to be sent with the email
     msg = MIMEMultipart()
     html_body = MIMEText(get_html(), 'html')
@@ -89,8 +89,8 @@ def send_email():
         smtpObj = smtplib.SMTP_SSL('smtp-mail.outlook.com', 465)
     smtpObj.ehlo()
     smtpObj.starttls()
-    smtpObj.login('challengeTransactions@outlook.com', "challenteT21%") 
-    smtpObj.sendmail('challengeTransactions@outlook.com', 'challengeTransactions@outlook.com', msg)
+    smtpObj.login(EMAIL_USER, EMAIL_PASS) 
+    smtpObj.sendmail(EMAIL_USER, EMAIL_USER, msg)
     smtpObj.quit()
     print("Email succesfully sent...")
 
@@ -137,4 +137,6 @@ if __name__ == "__main__":
     create_required_folders(current_directory)
     filename = "../data/transactions.csv"
     process_file(filename)
-    send_email()
+    EMAIL_USER = os.getenv('EMAIL_USER')
+    EMAIL_PASS = os.getenv('EMAIL_PASS')
+    send_email(EMAIL_USER, EMAIL_PASS)
