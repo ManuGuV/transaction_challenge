@@ -1,6 +1,13 @@
 import pandas
 import docx
 import os
+import smtplib
+from email.MIMEMultipart import MIMEMultipart
+from email.MIMEText import MIMEText
+from email.MIMEImage import MIMEImage
+from email.mime.base import MIMEBase 
+from email.mime.application import MIMEApplication
+from email import encoders
 
 #Function to create required folders to save files
 def create_required_folders(current_directory):
@@ -36,9 +43,55 @@ def generate_document(current_directory, total_balance, avg_debit, avg_credit, s
     # Now save the document to a location 
     doc.save(current_directory + "/resources/email/file_sumary.docx")
 
+#Function to create the body of the email using html
+def get_html():
+    html = """\
+    <html>
+    <head></head>
+    <body>
+        <div>
+        <img src="cid:image1" alt="stori_logo" >
+        <h2>Good Morning</h2>
+        <p>Attached you'll find the summary of the file processed.</p>
+        <p>Greetings</p>
+        </div>
+    </body>
+    </html>
+    """
+    return html
+
+#Function to send email
 def send_email():
-#Empty function for the time being but this would probably have html code and the inclusion of the word
-#document as attachment  
+    #Create attachments to be sent with the email
+    msg = MIMEMultipart()
+    html_body = MIMEText(get_html(), 'html')
+    msg.attach(html_body)
+    filename = "Summary.docx"
+    summary_file = current_directory + "/resources/email/file_sumary.docx"
+    attachment = open(summary_file, 'rb')
+    file_attachment = MIMEApplication(attachment.read(),
+                    'vnd.openxmlformats-officedocument.wordprocessingml.document')
+    file_attachment.add_header('Content-Disposition',
+                    "attachment; filename= %s" % filename)
+    msg.attach(file_attachment)
+    image_file = open('logo.jpeg', 'rb')
+    msgImage = MIMEImage(image_file.read())
+    image_file.close()
+    # Define the image's ID as referenced in the html
+    msgImage.add_header('Content-ID', '<image1>')
+    msg.attach(msgImage)
+    msg = msg.as_string()
+    attachment.close()
+    try:
+        smtpObj = smtplib.SMTP('smtp-mail.outlook.com', 587)
+    except Exception as e:
+        print(e)
+        smtpObj = smtplib.SMTP_SSL('smtp-mail.outlook.com', 465)
+    smtpObj.ehlo()
+    smtpObj.starttls()
+    smtpObj.login('challengeTransactions@outlook.com', "challenteT21%") 
+    smtpObj.sendmail('challengeTransactions@outlook.com', 'challengeTransactions@outlook.com', msg)
+    smtpObj.quit()
     print("Email succesfully sent...")
 
 #Function that gathers important information from csv
