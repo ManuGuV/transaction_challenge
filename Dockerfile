@@ -9,4 +9,4 @@ COPY /src/. /src
 RUN pip install -r libraries.txt
 
 #Start the application
-CMD python /app/main.py
+CMD python /src/main.py
