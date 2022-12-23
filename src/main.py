@@ -2,9 +2,9 @@ import pandas
 import docx
 import os
 import smtplib
-from email.MIMEMultipart import MIMEMultipart
-from email.MIMEText import MIMEText
-from email.MIMEImage import MIMEImage
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
 from email.mime.base import MIMEBase 
 from email.mime.application import MIMEApplication
 from email import encoders
@@ -18,7 +18,7 @@ def create_required_folders(current_directory):
 
 #Function to generate word document to be sent
 def generate_document(current_directory, total_balance, avg_debit, avg_credit, summary_per_month):
-    # Create an instance of a word document
+    # Create an instance of a word document s
     doc = docx.Document()
     # Add headers to the document
     doc.add_heading('File Summary', 1)  
@@ -39,7 +39,7 @@ def generate_document(current_directory, total_balance, avg_debit, avg_credit, s
         row = table.rows[2]
         row.cells[0].text = "Average credit amounts"
         row.cells[1].text = str(summary[1][1])
-    doc.add_picture("logo.jpeg")
+    doc.add_picture("/src/logo.jpeg")
     # Now save the document to a location 
     doc.save(current_directory + "/resources/email/file_sumary.docx")
 
@@ -74,7 +74,7 @@ def send_email(EMAIL_USER, EMAIL_PASS):
     file_attachment.add_header('Content-Disposition',
                     "attachment; filename= %s" % filename)
     msg.attach(file_attachment)
-    image_file = open('logo.jpeg', 'rb')
+    image_file = open('/src/logo.jpeg', 'rb')
     msgImage = MIMEImage(image_file.read())
     image_file.close()
     # Define the image's ID as referenced in the html
@@ -135,7 +135,7 @@ def process_file(file):
 if __name__ == "__main__":
     current_directory = os.path.dirname(os.path.abspath(__file__))
     create_required_folders(current_directory)
-    filename = "../data/transactions.csv"
+    filename = "/src/data/transactions.csv"
     process_file(filename)
     EMAIL_USER = os.getenv('EMAIL_USER')
     EMAIL_PASS = os.getenv('EMAIL_PASS')

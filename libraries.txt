@@ -1,2 +1,3 @@
 pandas
 python-docx
+email==6.0.0a1
